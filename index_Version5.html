@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Outils Professionnels</title>
+  <style>
+    :root {
+      --bg-1: #eef3f8;
+      --bg-2: #dfeaf5;
+      --panel: #ffffff;
+      --panel-dark: #111827;
+      --panel-soft: #f8fafc;
+      --primary: #2f6fed;
+      --primary-soft: #dfeaff;
+      --secondary: #f59e0b;
+      --success: #10b981;
+      --danger: #ef4444;
+      --text: #111827;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: linear-gradient(135deg, var(--bg-1), var(--bg-2));
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--text);
+    }
+
+    body {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .app {
+      width: min(430px, 100%);
+      background: rgba(255, 255, 255, 0.72);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.7);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      padding: 22px 20px 18px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+
+    .title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      color: var(--text);
+      margin: 0;
+    }
+
+    .back-button {
+      border: 0;
+      background: var(--panel-dark);
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+
+    .back-button[hidden] {
+      display: none;
+    }
+
+    .back-button:hover {
+      transform: translateY(-1px);
+      opacity: 0.96;
+    }
+
+    .page[hidden] {
+      display: none;
+    }
+
+    .page h2 {
+      margin: 0 0 18px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      text-align: center;
+      color: var(--text);
+    }
+
+    .menu-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .menu-button,
+    .primary-btn,
+    .secondary-btn,
+    .danger-btn,
+    .equal-btn,
+    .operator-btn,
+    .number-btn,
+    .utility-btn {
+      border: 0;
+      border-radius: 14px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: transform 0.12s ease, filter 0.12s ease;
+      user-select: none;
+    }
+
+    .menu-button:hover,
+    .primary-btn:hover,
+    .secondary-btn:hover,
+    .danger-btn:hover,
+    .equal-btn:hover,
+    .operator-btn:hover,
+    .number-btn:hover,
+    .utility-btn:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.03);
+    }
+
+    .menu-button:active,
+    .primary-btn:active,
+    .secondary-btn:active,
+    .danger-btn:active,
+    .equal-btn:active,
+    .operator-btn:active,
+    .number-btn:active,
+    .utility-btn:active {
+      transform: scale(0.99);
+    }
+
+    .menu-button {
+      background: linear-gradient(135deg, var(--primary), #5e86f7);
+      color: white;
+      padding: 16px 18px;
+      font-size: 1rem;
+      text-align: center;
+    }
+
+    .calculator-panel {
+      background: var(--panel-soft);
+      border-radius: 18px;
+      padding: 14px;
+      border: 1px solid var(--line);
+    }
+
+    .screen {
+      min-height: 110px;
+      border-radius: 16px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-end;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      color: #111827;
+      text-align: right;
+      overflow-wrap: anywhere;
+    }
+
+    #expression {
+      min-height: 24px;
+      font-size: 1rem;
+      color: #64748b;
+    }
+
+    #calcResult {
+      font-size: clamp(2rem, 6vw, 2.5rem);
+      font-weight: 700;
+      color: #2f6fed;
+      margin-top: 8px;
+      letter-spacing: 0.02em;
+    }
+
+    .number-highlight {
+      color: #111827;
+    }
+
+    .operator-highlight {
+      color: #d97706;
+      font-weight: 700;
+    }
+
+    .calculator-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .number-btn, .utility-btn, .operator-btn, .equal-btn {
+      height: 58px;
+      font-size: 1.1rem;
+    }
+
+    .number-btn {
+      background: #edf2f9;
+      color: var(--text);
+    }
+
+    .operator-btn {
+      background: #f3c867;
+      color: #2b2212;
+    }
+
+    .operator-btn.selected {
+      background: #7fe7d4;
+      color: #0f2e2b;
+    }
+
+    .equal-btn {
+      background: linear-gradient(135deg, var(--success), #19b98f);
+      color: white;
+    }
+
+    .danger-btn {
+      background: var(--danger);
+      color: white;
+    }
+
+    .utility-btn {
+      background: #e5e7eb;
+      color: var(--text);
+    }
+
+    .zero {
+      grid-column: span 2;
+    }
+
+    .time-display {
+      font-size: clamp(2.7rem, 10vw, 4rem);
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.06em;
+      text-align: center;
+      color: var(--primary);
+      margin: 18px 0 18px;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .primary-btn {
+      background: linear-gradient(135deg, var(--success), #18b38c);
+      color: white;
+      padding: 14px 10px;
+    }
+
+    .secondary-btn {
+      background: linear-gradient(135deg, var(--secondary), #f6a109);
+      color: white;
+      padding: 14px 10px;
+    }
+
+    .timer-controls {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .set-duration {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 8px 14px;
+      color: var(--muted);
+    }
+
+    .set-duration label {
+      display: grid;
+      justify-items: center;
+      font-size: 0.78rem;
+      gap: 6px;
+      font-weight: 600;
+    }
+
+    .set-duration input {
+      width: 90px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      color: var(--text);
+      padding: 10px 8px;
+      text-align: center;
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+
+    .status {
+      min-height: 24px;
+      margin: 4px 0 14px;
+      text-align: center;
+      font-size: 0.9rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header>
+      <h1 class="title">Outils</h1>
+      <button class="back-button" id="backButton" hidden>Retour</button>
+    </header>
+
+    <section class="page" id="homePage">
+      <h2>Choisissez une application</h2>
+      <div class="menu-grid">
+        <button class="menu-button" data-page="calculatorPage">Calculatrice</button>
+        <button class="menu-button" data-page="stopwatchPage">Chronomètre</button>
+        <button class="menu-button" data-page="timerPage">Minuteur</button>
+      </div>
+    </section>
+
+    <section class="page" id="calculatorPage" hidden>
+      <div class="calculator-panel">
+        <div class="screen">
+          <div id="expression"></div>
+          <div id="calcResult">0</div>
+        </div>
+
+        <div class="calculator-grid">
+          <button class="danger-btn" id="clearButton">C</button>
+          <button class="utility-btn" id="deleteButton">Effacer</button>
+          <button class="operator-btn" data-operator="/">÷</button>
+          <button class="operator-btn" data-operator="*">×</button>
+
+          <button class="number-btn" data-digit="7">7</button>
+          <button class="number-btn" data-digit="8">8</button>
+          <button class="number-btn" data-digit="9">9</button>
+          <button class="operator-btn" data-operator="-">−</button>
+
+          <button class="number-btn" data-digit="4">4</button>
+          <button class="number-btn" data-digit="5">5</button>
+          <button class="number-btn" data-digit="6">6</button>
+          <button class="operator-btn" data-operator="+">+</button>
+
+          <button class="number-btn" data-digit="1">1</button>
+          <button class="number-btn" data-digit="2">2</button>
+          <button class="number-btn" data-digit="3">3</button>
+          <button class="equal-btn" id="equalsButton">=</button>
+
+          <button class="number-btn zero" data-digit="0">0</button>
+          <button class="utility-btn" id="decimalButton">.</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="stopwatchPage" hidden>
+      <h2>Chronomètre</h2>
+      <div class="time-display" id="stopwatchDisplay">00:00.00</div>
+      <div class="controls">
+        <button class="primary-btn" id="stopwatchStart">Démarrer</button>
+        <button class="secondary-btn" id="stopwatchReset">Réinitialiser</button>
+      </div>
+    </section>
+
+    <section class="page" id="timerPage" hidden>
+      <h2>Minuteur</h2>
+
+      <div class="set-duration">
+        <label>
+          Minutes
+          <input id="timerMinutes" type="number" min="0" max="999" value="1" />
+        </label>
+        <span>:</span>
+        <label>
+          Secondes
+          <input id="timerSeconds" type="number" min="0" max="59" value="0" />
+        </label>
+      </div>
+
+      <div class="time-display" id="timerDisplay">01:00</div>
+      <p class="status" id="timerStatus" aria-live="polite"></p>
+
+      <div class="timer-controls">
+        <button class="primary-btn" id="timerStart">Démarrer</button>
+        <button class="secondary-btn" id="timerReset">Réinitialiser</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Navigation
+    const pages = document.querySelectorAll(".page");
+    const backButton = document.getElementById("backButton");
+
+    function showPage(pageId) {
+      pages.forEach((page) => {
+        page.hidden = page.id !== pageId;
+      });
+      backButton.hidden = pageId === "homePage";
+    }
+
+    document.querySelectorAll("[data-page]").forEach((button) => {
+      button.addEventListener("click", () => showPage(button.dataset.page));
+    });
+
+    backButton.addEventListener("click", () => showPage("homePage"));
+
+    // Calculatrice
+    const expression = document.getElementById("expression");
+    const calcResult = document.getElementById("calcResult");
+    const operatorButtons = document.querySelectorAll("[data-operator]");
+
+    let currentInput = "0";
+    let firstValue = null;
+    let operator = null;
+    let waitingForSecondValue = false;
+    let completedExpression = "";
+
+    const operatorSymbols = {
+      "+": "+",
+      "-": "−",
+      "*": "×",
+      "/": "÷"
+    };
+
+    function formatNumber(value) {
+      if (!Number.isFinite(value)) return "Erreur";
+      return String(Number(value.toPrecision(10)));
+    }
+
+    function updateCalculator() {
+      expression.replaceChildren();
+
+      if (completedExpression) {
+        expression.textContent = completedExpression;
+      } else if (firstValue !== null && operator) {
+        const first = document.createElement("span");
+        first.className = "number-highlight";
+        first.textContent = formatNumber(firstValue);
+
+        const op = document.createElement("span");
+        op.className = "operator-highlight";
+        op.textContent = ` ${operatorSymbols[operator]} `;
+
+        expression.append(first, op);
+
+        if (!waitingForSecondValue) {
+          const second = document.createElement("span");
+          second.className = "number-highlight";
+          second.textContent = currentInput;
+          expression.appendChild(second);
+        }
+      } else {
+        expression.textContent = currentInput;
+      }
+
+      calcResult.textContent = currentInput;
+
+      operatorButtons.forEach((button) => {
+        button.classList.toggle("selected", button.dataset.operator === operator);
+      });
+    }
+
+    function enterDigit(digit) {
+      if (completedExpression) {
+        currentInput = digit;
+        firstValue = null;
+        operator = null;
+        completedExpression = "";
+      } else if (waitingForSecondValue) {
+        currentInput = digit;
+        waitingForSecondValue = false;
+      } else {
+        currentInput = currentInput === "0" ? digit : currentInput + digit;
+      }
+      updateCalculator();
+    }
+
+    function enterDecimal() {
+      if (completedExpression) {
+        currentInput = "0.";
+        firstValue = null;
+        operator = null;
+        completedExpression = "";
+      } else if (waitingForSecondValue) {
+        currentInput = "0.";
+        waitingForSecondValue = false;
+      } else if (!currentInput.includes(".")) {
+        currentInput += ".";
+      }
+      updateCalculator();
+    }
+
+    function calculate(a, b, op) {
+      switch (op) {
+        case "+": return a + b;
+        case "-": return a - b;
+        case "*": return a * b;
+        case "/": return b === 0 ? NaN : a / b;
+        default: return b;
+      }
+    }
+
+    function chooseOperator(nextOperator) {
+      if (currentInput === "Erreur") return;
+
+      if (firstValue === null) {
+        firstValue = Number(currentInput);
+      } else if (operator && !waitingForSecondValue) {
+        firstValue = calculate(firstValue, Number(currentInput), operator);
+        currentInput = formatNumber(firstValue);
+      }
+
+      operator = nextOperator;
+      waitingForSecondValue = true;
+      completedExpression = "";
+      updateCalculator();
+    }
+
+    function showCalculationResult() {
+      if (firstValue === null || !operator || waitingForSecondValue) return;
+
+      const first = firstValue;
+      const second = Number(currentInput);
+      const symbol = operatorSymbols[operator];
+      const result = calculate(first, second, operator);
+
+      completedExpression = `${formatNumber(first)} ${symbol} ${formatNumber(second)} =`;
+
+      currentInput = formatNumber(result);
+      firstValue = null;
+      operator = null;
+      waitingForSecondValue = false;
+      updateCalculator();
+    }
+
+    document.querySelectorAll("[data-digit]").forEach((button) => {
+      button.addEventListener("click", () => enterDigit(button.dataset.digit));
+    });
+
+    operatorButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        chooseOperator(button.dataset.operator);
+      });
+    });
+
+    document.getElementById("decimalButton").addEventListener("click", enterDecimal);
+    document.getElementById("equalsButton").addEventListener("click", showCalculationResult);
+
+    document.getElementById("clearButton").addEventListener("click", () => {
+      currentInput = "0";
+      firstValue = null;
+      operator = null;
+      waitingForSecondValue = false;
+      completedExpression = "";
+      updateCalculator();
+    });
+
+    document.getElementById("deleteButton").addEventListener("click", () => {
+      if (completedExpression) return;
+
+      if (waitingForSecondValue) {
+        operator = null;
+        waitingForSecondValue = false;
+      } else {
+        currentInput = currentInput.length > 1 ? currentInput.slice(0, -1) : "0";
+      }
+      updateCalculator();
+    });
+
+    updateCalculator();
+
+    // Chronomètre
+    const stopwatchDisplay = document.getElementById("stopwatchDisplay");
+    const stopwatchStartButton = document.getElementById("stopwatchStart");
+    let stopwatchElapsed = 0;
+    let stopwatchStartedAt = 0;
+    let stopwatchInterval = null;
+
+    function formatStopwatch(milliseconds) {
+      const centiseconds = Math.floor(milliseconds / 10) % 100;
+      const seconds = Math.floor(milliseconds / 1000) % 60;
+      const minutes = Math.floor(milliseconds / 60000);
+      return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}.${String(centiseconds).padStart(2, "0")}`;
+    }
+
+    function updateStopwatch() {
+      stopwatchDisplay.textContent = formatStopwatch(stopwatchElapsed);
+    }
+
+    stopwatchStartButton.addEventListener("click", () => {
+      if (stopwatchInterval) {
+        stopwatchElapsed = Date.now() - stopwatchStartedAt;
+        clearInterval(stopwatchInterval);
+        stopwatchInterval = null;
+        stopwatchStartButton.textContent = "Reprendre";
+        updateStopwatch();
+      } else {
+        stopwatchStartedAt = Date.now() - stopwatchElapsed;
+        stopwatchInterval = setInterval(() => {
+          stopwatchElapsed = Date.now() - stopwatchStartedAt;
+          updateStopwatch();
+        }, 30);
+        stopwatchStartButton.textContent = "Pause";
+      }
+    });
+
+    document.getElementById("stopwatchReset").addEventListener("click", () => {
+      clearInterval(stopwatchInterval);
+      stopwatchInterval = null;
+      stopwatchElapsed = 0;
+      stopwatchStartButton.textContent = "Démarrer";
+      updateStopwatch();
+    });
+
+    // Minuteur
+    const timerMinutes = document.getElementById("timerMinutes");
+    const timerSeconds = document.getElementById("timerSeconds");
+    const timerDisplay = document.getElementById("timerDisplay");
+    const timerStatus = document.getElementById("timerStatus");
+    const timerStartButton = document.getElementById("timerStart");
+
+    let timerRemaining = null;
+    let timerEndAt = 0;
+    let timerInterval = null;
+    let timerAudioContext = null;
+
+    function prepareTimerAudio() {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) return;
+
+      if (!timerAudioContext) {
+        timerAudioContext = new AudioContextClass();
+      }
+
+      if (timerAudioContext.state === "suspended") {
+        timerAudioContext.resume();
+      }
+    }
+
+    function playTimerEndSound() {
+      if (!timerAudioContext) return;
+
+      const now = timerAudioContext.currentTime;
+
+      [0, 0.35, 0.7, 1.05].forEach((delay, index) => {
+        const oscillator = timerAudioContext.createOscillator();
+        const volume = timerAudioContext.createGain();
+        const startTime = now + delay;
+
+        oscillator.type = "sine";
+        oscillator.frequency.value = index % 2 === 0 ? 880 : 660;
+
+        volume.gain.setValueAtTime(0, startTime);
+        volume.gain.linearRampToValueAtTime(0.2, startTime + 0.03);
+        volume.gain.setValueAtTime(0.2, startTime + 0.18);
+        volume.gain.linearRampToValueAtTime(0, startTime + 0.28);
+
+        oscillator.connect(volume);
+        volume.connect(timerAudioContext.destination);
+
+        oscillator.start(startTime);
+        oscillator.stop(startTime + 0.3);
+      });
+    }
+
+    function readTimerInputs() {
+      const minutes = Math.max(0, Number(timerMinutes.value) || 0);
+      const seconds = Math.min(59, Math.max(0, Number(timerSeconds.value) || 0));
+      return (minutes * 60 + seconds) * 1000;
+    }
+
+    function renderTimer(milliseconds) {
+      const totalSeconds = Math.ceil(milliseconds / 1000);
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      timerDisplay.textContent =
+        `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+    }
+
+    function stopTimer() {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      timerStartButton.textContent = "Démarrer";
+    }
+
+    function updateTimer() {
+      timerRemaining = Math.max(0, timerEndAt - Date.now());
+      renderTimer(timerRemaining);
+
+      if (timerRemaining <= 0) {
+        stopTimer();
+        timerStatus.textContent = "Le compte à rebours est terminé.";
+        playTimerEndSound();
+      }
+    }
+
+    timerStartButton.addEventListener("click", () => {
+      prepareTimerAudio();
+
+      if (timerInterval) {
+        timerRemaining = Math.max(0, timerEndAt - Date.now());
+        stopTimer();
+        timerStatus.textContent = "Minuteur en pause.";
+        renderTimer(timerRemaining);
+        return;
+      }
+
+      if (timerRemaining === null || timerRemaining === 0) {
+        timerRemaining = readTimerInputs();
+      }
+
+      if (timerRemaining <= 0) {
+        timerStatus.textContent = "Veuillez sélectionner une durée supérieure à zéro.";
+        return;
+      }
+
+      timerStatus.textContent = "";
+      timerEndAt = Date.now() + timerRemaining;
+      timerStartButton.textContent = "Pause";
+      timerInterval = setInterval(updateTimer, 100);
+      updateTimer();
+    });
+
+    document.getElementById("timerReset").addEventListener("click", () => {
+      stopTimer();
+      timerRemaining = readTimerInputs();
+      timerStatus.textContent = "";
+      renderTimer(timerRemaining);
+    });
+
+    [timerMinutes, timerSeconds].forEach((input) => {
+      input.addEventListener("input", () => {
+        if (!timerInterval) {
+          timerRemaining = readTimerInputs();
+          timerStatus.textContent = "";
+          renderTimer(timerRemaining);
+        }
+      });
+    });
+
+    renderTimer(readTimerInputs());
+  </script>
+</body>
+</html>
